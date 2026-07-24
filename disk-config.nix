@@ -23,6 +23,14 @@
               mountpoint = "/boot";
             };
           };
+          swap = {
+            size = "2G";
+            content = {
+              type = "swap";
+              discardPolicy = "both";
+              randomEncryption = false;
+            };
+          };
           root = {
             name = "root";
             size = "100%";
