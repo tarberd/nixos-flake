@@ -25,6 +25,26 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB6a46GEO27tNA42ehDQkZClA4oNWypBDiOyc86OkNWO bernardo.mferrari@gmail.com"
   ];
 
+  networking.useDHCP = false;
+  networking.networkmanager.enable = true;
+
+  services.cloud-init = {
+    enable = true;
+    network.enable = true;
+  };
+
+#  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+#
+#  networking.interfaces.ens18.ipv4.addresses = [ {
+#    address = "206.83.40.77";
+#    prefixLength = 24;
+#  } ];
+#
+#  networking.defaultGateway = {
+#    address = "206.83.40.1";
+#    interface = "ens18";
+#  };
+
   # Match your target release
   system.stateVersion = "26.05";
 }
