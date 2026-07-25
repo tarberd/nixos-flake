@@ -10,16 +10,15 @@
     (modulesPath + "/profiles/qemu-guest.nix")
     ./disk-config.nix
   ];
+
+  boot.kernelParams = [
+    "net.ifnames=0"
+  ];
+
   boot.loader.grub = {
     efiSupport = true;
     efiInstallAsRemovable = true;
   };
-  services.openssh.enable = true;
-
-  environment.systemPackages = map lib.lowPrio [
-    pkgs.curl
-    pkgs.gitMinimal
-  ];
 
   users.users.root = {
     hashedPassword = "$6$NvAm.r/Vdj43Y4gA$snMm90T2nBGPKRJjeCnAlHpcw/CtngbaIyE1Pc.NCd5JwhZbaudHGhtShPS4dI.ZRiWo30zKjR06rLQFdbhro.";
@@ -28,25 +27,26 @@
     ];
   };
 
+  environment.systemPackages = map lib.lowPrio [
+    pkgs.curl
+    pkgs.gitMinimal
+  ];
+
+  services.openssh.enable = true;
+
   networking.useDHCP = false;
-  networking.networkmanager.enable = true;
 
-  services.cloud-init = {
-    enable = true;
-    network.enable = true;
+  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+
+  networking.interfaces.ens18.ipv4.addresses = [ {
+    address = "206.83.40.77";
+    prefixLength = 24;
+  } ];
+
+  networking.defaultGateway = {
+    address = "206.83.40.1";
+    interface = "ens18";
   };
-
-#  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
-#
-#  networking.interfaces.ens18.ipv4.addresses = [ {
-#    address = "206.83.40.77";
-#    prefixLength = 24;
-#  } ];
-#
-#  networking.defaultGateway = {
-#    address = "206.83.40.1";
-#    interface = "ens18";
-#  };
 
   # Match your target release
   system.stateVersion = "26.05";
