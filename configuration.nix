@@ -28,8 +28,10 @@
   };
 
   environment.systemPackages = map lib.lowPrio [
+    pkgs.neovim
     pkgs.curl
     pkgs.gitMinimal
+    pkgs.wireguard-tools
   ];
 
   services.openssh.enable = true;
