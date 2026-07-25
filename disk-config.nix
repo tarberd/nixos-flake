@@ -5,6 +5,7 @@
     disk.disk1 = {
       device = lib.mkDefault "/dev/sda";
       type = "disk";
+      imageSize = "4G";
       content = {
         type = "gpt";
         partitions = {
@@ -21,14 +22,6 @@
               type = "filesystem";
               format = "vfat";
               mountpoint = "/boot";
-            };
-          };
-          swap = {
-            size = "2G";
-            content = {
-              type = "swap";
-              discardPolicy = "both";
-              randomEncryption = false;
             };
           };
           root = {

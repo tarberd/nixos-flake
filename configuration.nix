@@ -21,9 +21,12 @@
     pkgs.gitMinimal
   ];
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB6a46GEO27tNA42ehDQkZClA4oNWypBDiOyc86OkNWO bernardo.mferrari@gmail.com"
-  ];
+  users.users.root = {
+    hashedPassword = "$6$NvAm.r/Vdj43Y4gA$snMm90T2nBGPKRJjeCnAlHpcw/CtngbaIyE1Pc.NCd5JwhZbaudHGhtShPS4dI.ZRiWo30zKjR06rLQFdbhro.";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB6a46GEO27tNA42ehDQkZClA4oNWypBDiOyc86OkNWO bernardo.mferrari@gmail.com"
+    ];
+  };
 
   networking.useDHCP = false;
   networking.networkmanager.enable = true;
