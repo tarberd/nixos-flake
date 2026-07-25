@@ -39,13 +39,34 @@
   networking.useDHCP = false;
 
   networking.interfaces.eth0 = {
-    ipv4.addresses = [ { address = "206.83.40.77"; prefixLength = 24; } ];
+    ipv4.addresses = [
+      { 
+        address = "206.83.40.77";
+        prefixLength = 24;
+      }
+    ];
+    ipv6.addresses = [
+      { 
+        address = "2a0f:9400:fa0:44::1";
+        prefixLength = 64;
+      }
+    ];
   };
 
-  networking.nameservers = [ "8.8.8.8" "1.1.1.1" ];
+  networking.nameservers = [
+    "8.8.8.8"
+    "1.1.1.1"
+    "2001:4860:4860::8888"
+    "2606:4700:4700::1111"
+  ];
 
   networking.defaultGateway = {
     address = "206.83.40.1";
+    interface = "eth0";
+  };
+
+  networking.defaultGateway6 = {
+    address = "fe80::1";
     interface = "eth0";
   };
 
