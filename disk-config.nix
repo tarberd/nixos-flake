@@ -5,7 +5,7 @@
     disk.disk1 = {
       device = lib.mkDefault "/dev/sda";
       type = "disk";
-      imageSize = "4G";
+      imageSize = "3G";
       content = {
         type = "gpt";
         partitions = {

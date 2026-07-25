@@ -36,16 +36,15 @@
 
   networking.useDHCP = false;
 
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.interfaces.eth0 = {
+    ipv4.addresses = [ { address = "206.83.40.77"; prefixLength = 24; } ];
+  };
 
-  networking.interfaces.ens18.ipv4.addresses = [ {
-    address = "206.83.40.77";
-    prefixLength = 24;
-  } ];
+  networking.nameservers = [ "8.8.8.8" "1.1.1.1" ];
 
   networking.defaultGateway = {
     address = "206.83.40.1";
-    interface = "ens18";
+    interface = "eth0";
   };
 
   # Match your target release
