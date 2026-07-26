@@ -7,6 +7,15 @@
 let
   cfg = config.services.firewalld;
   format = pkgs.formats.xml { };
+  lib' = import ./lib.nix { inherit lib; };
+  inherit (lib')
+    filterNullAttrs
+    mkPortOption
+    mkXmlAttr
+    portProtocolOptions
+    protocolOption
+    toXmlAttrs
+    ;
 in
 {
   # 1. Extend the system schema with our new 'policies' option
@@ -52,11 +61,11 @@ in
         source = format.generate "firewalld-policy-${name}.xml" {
           policy =
             let
-              mkXmlAttrList = name: map(lib.mkXmlAttr name);
+              mkXmlAttrList = name: map(mkXmlAttr name);
             in
-            lib.filterNullAttrs (
+            filterNullAttrs (
               lib.mergeAttrsList [
-                (lib.toXmlAttrs { inherit (value) target; })
+                (toXmlAttrs { inherit (value) target; })
                 {
                   ingress-zone = mkXmlAttrList "name" value.ingressZones;
                   egress-zone = mkXmlAttrList "name" value.egressZones;

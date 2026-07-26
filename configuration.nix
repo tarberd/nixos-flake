@@ -40,9 +40,9 @@
         ];
       };
     };
-    wireguard.interfaces = {
+    wg-quick.interfaces = {
       wg0 = {
-        ips = [
+        address = [
           "10.100.0.1/24"
           "2a0f:9400:738f:1::1/64"
         ];
@@ -75,6 +75,7 @@
     ];
     firewall.enable = false;
     nftables.enable = true;
+    nftables.flushRuleset = true;
   };
 
   services.openssh.enable = true;
@@ -86,17 +87,26 @@
       public = {
         interfaces = [ "eth0" ];
         services = [ "wireguard" "ssh" ];
+	protocols = [ "icmp" "ipv6-icmp"];
+	forward = true;
       };
       trusted = {
         interfaces = [ "wg0" ];
+	forward = true;
       };
     };
 
     policies = {
       vpn-inbound = {
+        target = "CONTINUE"; 
         ingressZones = [ "public" ];
         egressZones = [ "trusted" ];
-        protocols = [ "ipv6-icmp" ];
+        protocols = [ "icmp" "ipv6-icmp" ];
+      };
+      vpn-outbound = {
+        target = "ACCEPT"; 
+        ingressZones = [ "trusted" ];
+        egressZones = [ "public" ];
       };
     };
   };
