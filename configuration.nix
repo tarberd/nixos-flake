@@ -9,7 +9,10 @@
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
     ./disk-config.nix
+    ./modules/firewalld-policies.nix
   ];
+
+  system.stateVersion = "26.05";
 
   boot.kernelParams = [
     "net.ifnames=0"
@@ -25,29 +28,8 @@
     efiInstallAsRemovable = true;
   };
 
-  users.users.root = {
-    hashedPassword = "$6$NvAm.r/Vdj43Y4gA$snMm90T2nBGPKRJjeCnAlHpcw/CtngbaIyE1Pc.NCd5JwhZbaudHGhtShPS4dI.ZRiWo30zKjR06rLQFdbhro.";
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB6a46GEO27tNA42ehDQkZClA4oNWypBDiOyc86OkNWO bernardo.mferrari@gmail.com"
-    ];
-  };
-
-  environment.systemPackages = map lib.lowPrio [
-    pkgs.neovim
-    pkgs.curl
-    pkgs.gitMinimal
-    pkgs.wireguard-tools
-  ];
-
-  services.openssh.enable = true;
-
   networking = {
     useDHCP = false;
-    nat = {
-      enable = true;
-      externalInterface = "eth0";
-      internalInterfaces = [ "wg0" ];
-    };
     interfaces = {
       eth0 = {
         ipv4.addresses = [
@@ -61,27 +43,20 @@
     wireguard.interfaces = {
       wg0 = {
         ips = [
-	  "10.100.0.1/24"
-	  "2a0f:9400:738f:1::1/64"
-	];
-	listenPort = 51820;
-	postSetup = ''
-          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
-	'';
-	postShutdown = ''
-          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
-        '';
-	privateKeyFile = "/root/wireguard-keys/private";
-	peers = [
-	  {
-	    # stanley
-	    publicKey = "VNpR6K59HlEE9CRAiDxTkbFyZ0e5HCG8a+x7uyAdTmg=";
-	    allowedIPs = [
-	      "10.100.0.2/32"
-	      "2a0f:9400:738f:1::2/128"
-	    ];
-	  }
-	];
+          "10.100.0.1/24"
+          "2a0f:9400:738f:1::1/64"
+        ];
+        listenPort = 51820;
+        privateKeyFile = "/root/wireguard-keys/private";
+        peers = [
+          { # stanley
+            publicKey = "VNpR6K59HlEE9CRAiDxTkbFyZ0e5HCG8a+x7uyAdTmg=";
+            allowedIPs = [
+              "10.100.0.2/32"
+              "2a0f:9400:738f:1::2/128"
+            ];
+          }
+        ];
       };
     };
     defaultGateway = {
@@ -98,10 +73,47 @@
       "2001:4860:4860::8888"
       "2606:4700:4700::1111"
     ];
+    firewall.enable = false;
+    nftables.enable = true;
   };
 
-  # Match your target release
-  system.stateVersion = "26.05";
-  # Enable Flakes and the modern Nix CLI globally
+  services.openssh.enable = true;
+
+  services.firewalld = {
+    enable = true;
+
+    zones = {
+      public = {
+        interfaces = [ "eth0" ];
+        services = [ "wireguard" "ssh" ];
+      };
+      trusted = {
+        interfaces = [ "wg0" ];
+      };
+    };
+
+    policies = {
+      vpn-inbound = {
+        ingressZones = [ "public" ];
+        egressZones = [ "trusted" ];
+        protocols = [ "ipv6-icmp" ];
+      };
+    };
+  };
+
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  users.users.root = {
+    hashedPassword = "$6$NvAm.r/Vdj43Y4gA$snMm90T2nBGPKRJjeCnAlHpcw/CtngbaIyE1Pc.NCd5JwhZbaudHGhtShPS4dI.ZRiWo30zKjR06rLQFdbhro.";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB6a46GEO27tNA42ehDQkZClA4oNWypBDiOyc86OkNWO bernardo.mferrari@gmail.com"
+    ];
+  };
+
+  environment.systemPackages = map lib.lowPrio [
+    pkgs.neovim
+    pkgs.curl
+    pkgs.gitMinimal
+    pkgs.wireguard-tools
+  ];
 }
