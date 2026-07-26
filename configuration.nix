@@ -89,6 +89,15 @@
         services = [ "wireguard" "ssh" ];
 	protocols = [ "icmp" "ipv6-icmp"];
 	forward = true;
+	masquerade = true;
+	forwardPorts = [
+	  {
+	    port = 8211;
+	    protocol = "udp";
+	    to-port = 8211;
+	    to-addr = "10.100.0.2";
+	  }
+	];
       };
       trusted = {
         interfaces = [ "wg0" ];
