@@ -87,33 +87,33 @@
       public = {
         interfaces = [ "eth0" ];
         services = [ "wireguard" "ssh" ];
-	protocols = [ "icmp" "ipv6-icmp"];
-	forward = true;
-	masquerade = true;
-	forwardPorts = [
-	  {
-	    port = 8211;
-	    protocol = "udp";
-	    to-port = 8211;
-	    to-addr = "10.100.0.2";
-	  }
-	];
+        protocols = [ "icmp" "ipv6-icmp"];
+        forward = true;
+        masquerade = true;
+        forwardPorts = [
+          {
+            port = 8211;
+            protocol = "udp";
+            to-port = 8211;
+            to-addr = "10.100.0.2";
+          }
+        ];
       };
       trusted = {
         interfaces = [ "wg0" ];
-	forward = true;
+        forward = true;
       };
     };
 
     policies = {
       vpn-inbound = {
-        target = "CONTINUE"; 
+        target = "CONTINUE";
         ingressZones = [ "public" ];
         egressZones = [ "trusted" ];
         protocols = [ "icmp" "ipv6-icmp" ];
       };
       vpn-outbound = {
-        target = "ACCEPT"; 
+        target = "ACCEPT";
         ingressZones = [ "trusted" ];
         egressZones = [ "public" ];
       };
