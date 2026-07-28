@@ -104,7 +104,7 @@
       };
     };
 
-    services.firewalld.services.palworld = {
+    services.palworld = {
       short = "Palworld Game Server";
       ports = [ { port = 8211; protocol = "udp"; } ];
     };
