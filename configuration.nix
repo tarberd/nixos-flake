@@ -43,7 +43,7 @@
     wg-quick.interfaces = {
       wg0 = {
         address = [
-          "10.100.0.1/24"
+          "10.100.1.1/24"
           "2a0f:9400:738f:1::1/64"
         ];
         listenPort = 51820;
@@ -52,8 +52,9 @@
           { # stanley
             publicKey = "VNpR6K59HlEE9CRAiDxTkbFyZ0e5HCG8a+x7uyAdTmg=";
             allowedIPs = [
-              "10.100.0.2/32"
+              "10.100.1.2/32"
               "2a0f:9400:738f:1::2/128"
+              "2a0f:9400:738f:2::/64"
             ];
           }
         ];
@@ -69,9 +70,9 @@
     };
     nameservers = [
       "8.8.8.8"
-      "1.1.1.1"
+      "8.8.4.4"
       "2001:4860:4860::8888"
-      "2606:4700:4700::1111"
+      "2606:4700:4700::8844"
     ];
     firewall.enable = false;
     nftables.enable = true;
@@ -88,21 +89,24 @@
         interfaces = [ "eth0" ];
         services = [ "wireguard" "ssh" ];
         protocols = [ "icmp" "ipv6-icmp"];
-        forward = true;
         masquerade = true;
         forwardPorts = [
           {
             port = 8211;
             protocol = "udp";
             to-port = 8211;
-            to-addr = "10.100.0.2";
+            to-addr = "10.100.1.2";
           }
         ];
       };
       trusted = {
         interfaces = [ "wg0" ];
-        forward = true;
       };
+    };
+
+    services.firewalld.services.palworld = {
+      short = "Palworld Game Server";
+      ports = [ { port = 8211; protocol = "udp"; } ];
     };
 
     policies = {
@@ -111,6 +115,7 @@
         ingressZones = [ "public" ];
         egressZones = [ "trusted" ];
         protocols = [ "icmp" "ipv6-icmp" ];
+        services = [ "palworld" ];
       };
       vpn-outbound = {
         target = "ACCEPT";
