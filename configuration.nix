@@ -98,6 +98,12 @@
             to-port = 8211;
             to-addr = "10.100.2.100";
           }
+          {
+            port = 34197;
+            protocol = "udp";
+            to-port = 34197;
+            to-addr = "10.100.2.101";
+          }
         ];
       };
       trusted = {
@@ -116,7 +122,7 @@
         ingressZones = [ "public" ];
         egressZones = [ "trusted" ];
         protocols = [ "icmp" "ipv6-icmp" ];
-        services = [ "palworld" ];
+        services = [ "palworld" "factorio" ];
       };
       vpn-outbound = {
         target = "ACCEPT";
